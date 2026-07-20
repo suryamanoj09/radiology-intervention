@@ -1,0 +1,46 @@
+# Pinned for reproducible, auditable builds. Pillow/pydicom/opencv parse
+# untrusted uploaded bytes, so an unpinned build could silently pull a
+# vulnerable release — run `pip-audit` on this file in CI and bump deliberately.
+fastapi==0.139.0
+uvicorn[standard]==0.51.0
+python-multipart==0.0.32
+pydicom==3.0.2
+pillow==12.3.0
+numpy==2.5.1
+pandas==3.0.3
+scikit-image==0.26.0
+# scipy: transitively present via scikit-image, but pinned explicitly because the
+# classical anatomy-segmentation baseline (services/tissue_seg.py) imports
+# scipy.ndimage directly. NOTE: the heavy segmentation seam (TotalSegmentator/
+# SynthSeg) is NOT here — it lives in the optional requirements-segment.txt.
+scipy==1.18.0
+# torch and torchvision are installed as CPU-only wheels in the Dockerfile
+# (from the PyTorch CPU index, BEFORE this file) so the multi-GB CUDA wheels are
+# never pulled. Do NOT re-add bare torch/torchvision lines here.
+# For a NON-Docker local install, install them manually, e.g.:
+#   pip install torch==2.2.2 torchvision==0.17.2 --index-url https://download.pytorch.org/whl/cpu
+torchxrayvision==1.5.2
+grad-cam==1.5.5
+opencv-python-headless==5.0.0.93
+google-generativeai==0.8.6
+groq==1.5.0
+python-dotenv==1.2.2
+# Encryption at rest for the users.twofa_secret column (Fernet/HKDF via
+# app/services/store.py). Only exercised when DATABASE_URL is set AND a 2FA secret is
+# stored; the zero-config demo never reaches it. If this dependency is missing the
+# store logs a one-time warning and stores plaintext (documented gap, no silent
+# false claim). Also a transitive dep of several libs already; pinned for auditability.
+cryptography==49.0.0
+# Opt-in persistence layer (app/db.py, app/models/db_models.py, app/services/store.py).
+# DORMANT unless DATABASE_URL is set — the zero-config demo never touches it. Default
+# engine is stdlib SQLite (a file, no external service); Postgres works by changing only
+# DATABASE_URL (add a driver such as psycopg[binary] then). SQLAlchemy is pulled in by
+# SQLModel; pinned for reproducible, auditable builds.
+sqlmodel==0.0.39
+SQLAlchemy==2.0.51
+# Alembic: versioned schema migrations for the Postgres path (backend/alembic/).
+# Not needed for the SQLite demo (app/db.init_db uses create_all), but pinned so a
+# real deploy can run `alembic upgrade head` reproducibly.
+alembic==1.18.5
+# NOTE: reportlab removed — PDF export is client-side (jsPDF), so the backend
+# never needed it (smaller image, smaller attack surface).

@@ -1,0 +1,15 @@
+{
+ "thresholds": {
+  "Effusion": 0.5342,
+  "Infiltration": 0.5252
+ },
+ "meta": {
+  "method": "youden_j",
+  "space": "banded_op_norm",
+  "ensemble": [
+   "densenet121-res224-all"
+  ],
+  "source": "NIH ChestX-ray14 sample",
+  "caveat": "In-distribution operating-point tuning, not clinical calibration."
+ }
+}

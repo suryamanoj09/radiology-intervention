@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+node_modules/
+dist/
+backend/storage/uploads/
+backend/storage/heatmaps/
+backend/storage/analysis/
+*.pt
+*.pth
+# datasets + validation artifacts (license-restricted or large; never commit)
+datasets/
+validation/data/
+validation/behavior_card.*
+kaggle.json
+*.tgz
+# internal design/implementation notes (kept locally, not committed)
+inv_*.md

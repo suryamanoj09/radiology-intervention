@@ -1,0 +1,4 @@
+# Extra deps for the offline validation harness (not needed by the app runtime).
+kaggle
+scikit-learn
+pandas

@@ -1,0 +1,35 @@
+RadAssist schema migrations (Alembic)
+=====================================
+
+Two schema paths, one set of models (app/models/db_models.py):
+
+  * DEMO / SQLite (zero-config)  — app/db.init_db() calls SQLModel.metadata.create_all
+    on first use when DATABASE_URL is set (e.g. sqlite:///./radassist.db). No Alembic
+    step is required for the demo. When DATABASE_URL is UNSET the whole DB layer is
+    dormant and nothing here runs.
+
+  * REAL DEPLOY / Postgres        — use Alembic so schema changes are versioned and
+    reviewable. The baseline migration (versions/70ac64f3c673_*.py) creates the exact
+    same three tables create_all would (verified with `alembic check` -> no drift).
+
+The database URL is read from the DATABASE_URL environment variable by alembic/env.py
+(alembic.ini's sqlalchemy.url is intentionally blank), so migrations always target the
+same database the app does.
+
+Common commands (run from the backend/ directory):
+
+    # apply all migrations to the DB in DATABASE_URL
+    DATABASE_URL=postgresql+psycopg://user:pass@host:5432/radassist \
+        python -m alembic upgrade head
+
+    # after changing app/models/db_models.py, generate the next migration
+    DATABASE_URL=sqlite:///./radassist.db \
+        python -m alembic revision --autogenerate -m "describe the change"
+
+    # confirm the DB matches the models (drift check)
+    DATABASE_URL=... python -m alembic check
+
+PHI safety: these tables hold auth data (username + scrypt hash + 2FA), a de-identified
+image_hash, a pathology label + banded score, and audit rows with a HASHED ip and a
+de-identified path. No raw pixels and no patient identifiers are ever stored — keep it
+that way when adding columns.

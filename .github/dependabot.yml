@@ -1,0 +1,55 @@
+version: 2
+
+# Weekly dependency updates for the three ecosystems RadAssist uses. Dependabot
+# opens PRs that CI (.github/workflows/ci.yml) then gates: tests must stay green
+# and the security-scans job surfaces any new advisory. Grouped where noisy so a
+# batch of minor bumps arrives as one reviewable PR rather than many.
+updates:
+  # --- Python backend (pinned in backend/requirements.txt) -------------------
+  - package-ecosystem: pip
+    directory: "/backend"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - backend
+    commit-message:
+      prefix: "deps(backend)"
+    groups:
+      # Batch routine minor/patch bumps; majors still come as individual PRs.
+      backend-minor-patch:
+        update-types:
+          - minor
+          - patch
+
+  # --- Frontend (npm, uses frontend/package-lock.json) -----------------------
+  - package-ecosystem: npm
+    directory: "/frontend"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - frontend
+    commit-message:
+      prefix: "deps(frontend)"
+    groups:
+      frontend-minor-patch:
+        update-types:
+          - minor
+          - patch
+
+  # --- GitHub Actions used in workflows --------------------------------------
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    labels:
+      - dependencies
+      - ci
+    commit-message:
+      prefix: "deps(ci)"

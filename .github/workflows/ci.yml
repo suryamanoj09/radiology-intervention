@@ -1,0 +1,184 @@
+name: CI
+
+# Runs on every push and pull request. Four jobs:
+#   backend-tests-db-off  — pytest with NO DATABASE_URL (the zero-config demo path)
+#   backend-tests-db-on   — pytest with DATABASE_URL=sqlite (the opt-in persistence path)
+#   frontend-build        — npm ci + `npm run build`
+#   security-scans        — pip-audit (Python) + npm audit (frontend)
+#
+# The security-scans job is intentionally NON-BLOCKING for now (continue-on-error)
+# so a freshly-published transitive advisory can't wedge every unrelated PR on day
+# one. It still runs on every push/PR and uploads a report, so regressions are
+# visible. TRIAGE NOTE: once the current findings in docs/SECURITY_SCANNING.md are
+# resolved or explicitly accepted, remove the `continue-on-error: true` lines below
+# to make the audits blocking (red = merge blocked).
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.13"
+  NODE_VERSION: "22"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Backend tests — DB OFF (zero-config demo: no DATABASE_URL in the environment)
+  # ---------------------------------------------------------------------------
+  backend-tests-db-off:
+    name: Backend tests (DB off)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+
+      - name: Install backend dependencies
+        working-directory: backend
+        # torch/torchvision are NOT installed: the suite mocks the vision model,
+        # so the multi-GB CUDA/CPU wheels are never needed to run tests.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Run pytest (DATABASE_URL unset)
+        # No DATABASE_URL env => store.py stays dormant, behaves as the demo does today.
+        run: python -m pytest backend/tests -p no:warnings -q
+
+  # ---------------------------------------------------------------------------
+  # Backend tests — DB ON (opt-in persistence: DATABASE_URL points at SQLite)
+  # ---------------------------------------------------------------------------
+  backend-tests-db-on:
+    name: Backend tests (DB on, sqlite)
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "sqlite:///./_ci.db"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Run pytest (DATABASE_URL=sqlite)
+        run: python -m pytest backend/tests -p no:warnings -q
+
+      - name: Clean up SQLite file
+        if: always()
+        run: rm -f ./_ci.db
+
+  # ---------------------------------------------------------------------------
+  # Frontend build
+  # ---------------------------------------------------------------------------
+  frontend-build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  # ---------------------------------------------------------------------------
+  # Security / supply-chain scans (NON-BLOCKING for now — see header note)
+  # ---------------------------------------------------------------------------
+  security-scans:
+    name: Security scans (pip-audit + npm audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # --- Python: pip-audit against the pinned requirements file ---------------
+      - name: Install pip-audit
+        run: python -m pip install pip-audit
+
+      - name: pip-audit (backend/requirements.txt)
+        # NON-BLOCKING: report but don't fail the build yet. Make blocking (remove
+        # this line) once findings are triaged per docs/SECURITY_SCANNING.md.
+        continue-on-error: true
+        run: |
+          pip-audit -r backend/requirements.txt --desc on --format columns | tee pip-audit-report.txt
+
+      - name: Upload pip-audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pip-audit-report
+          path: pip-audit-report.txt
+          if-no-files-found: ignore
+
+      # --- Frontend: npm audit --------------------------------------------------
+      - name: Install frontend dependencies (for lockfile audit)
+        working-directory: frontend
+        run: npm ci
+
+      - name: npm audit (frontend, production deps)
+        # NON-BLOCKING: report but don't fail the build yet. To make blocking, drop
+        # continue-on-error and add e.g. `--audit-level=high` to fail on high+.
+        continue-on-error: true
+        working-directory: frontend
+        run: |
+          npm audit --omit=dev --json | tee ../npm-audit-report.json
+          echo "--- human-readable ---"
+          npm audit --omit=dev || true
+
+      - name: Upload npm audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: npm-audit-report.json
+          if-no-files-found: ignore

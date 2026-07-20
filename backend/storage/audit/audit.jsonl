@@ -1,0 +1,17 @@
+{"ts":1784259513,"user":"-","action":"segment","resource":"/api/segment","ip":"testclient","status":503}
+{"ts":1784259568,"user":"-","action":"segment","resource":"/api/segment","ip":"testclient","status":200}
+{"ts":1784259609,"user":"-","action":"segment","resource":"/api/segment","ip":"testclient","status":200}
+{"ts":1784260775,"user":"-","action":"segment","resource":"/api/segment","ip":"127.0.0.1","status":200}
+{"ts":1784260775,"user":"-","action":"segment","resource":"/api/mr-segment","ip":"127.0.0.1","status":200}
+{"ts":1784260776,"user":"-","action":"segment","resource":"/api/segment","ip":"127.0.0.1","status":403}
+{"ts":1784261900,"user":"-","action":"segment","resource":"/api/mr-segment","ip":"127.0.0.1","status":200}
+{"ts":1784282283,"user":"-","action":"detect","resource":"/api/ct-detect","ip":"127.0.0.1","status":200}
+{"ts":1784286943,"user":"-","action":"detect","resource":"/api/mr-detect","ip":"127.0.0.1","status":200}
+{"ts":1784292902,"user":"-","action":"segment","resource":"/api/segment","ip":"127.0.0.1","status":200}
+{"ts":1784292907,"user":"-","action":"detect","resource":"/api/ct-detect","ip":"127.0.0.1","status":200}
+{"ts":1784351540,"user":"-","action":"detect","resource":"/api/ct-detect","ip":"127.0.0.1","status":200}
+{"ts":1784351546,"user":"-","action":"segment","resource":"/api/segment","ip":"127.0.0.1","status":200}
+{"ts":1784351551,"user":"-","action":"segment","resource":"/api/segment","ip":"127.0.0.1","status":200}
+{"ts":1784398427,"user":"radiologist","action":"GET","resource":"/api/sessions","ip":"testclient","status":200}
+{"ts":1784398427,"user":"radiologist","action":"POST","resource":"/api/sessions/revoke","ip":"testclient","status":400}
+{"ts":1784398427,"user":"radiologist","action":"POST","resource":"/api/sessions/revoke-others","ip":"testclient","status":400}

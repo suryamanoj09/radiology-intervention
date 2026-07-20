@@ -1,0 +1,31 @@
+# Fly.io deploy config for a TEMPORARY RadAssist demo on your own domain.
+# Runs the repo's Dockerfile (baked model + built SPA), demo-login gated, HTTPS.
+# Rename `app`, pick a region near you, then: fly launch --no-deploy  (or fly deploy).
+# Tear down when finished:  fly apps destroy <app>   (then remove the Cloudflare DNS record).
+
+app = "radassist-demo"          # <-- change to a unique name (this becomes <app>.fly.dev)
+primary_region = "iad"          # <-- pick the closest: iad(US-E) lax(US-W) lhr(London) fra(Frankfurt) sin(Singapore) etc.
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 7860
+  force_https = true
+  # Scale to zero when idle so a light demo costs ~nothing. First hit after idle
+  # cold-starts in a few seconds (the model weights are baked into the image, so
+  # nothing downloads). Set min_machines_running = 1 to avoid cold starts.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "2gb"                 # the chest-X-ray model needs ~1-1.5 GB; 2 GB is safe.
+
+[env]
+  PORT = "7860"
+  AUTH_DEMO_MODE = "1"           # gated login with the published demo credentials
+  SESSION_COOKIE_SECURE = "1"    # required over HTTPS
+  # Optional: set a strong SESSION_SECRET as a SECRET (not here) so demo logins
+  # survive a restart:  fly secrets set SESSION_SECRET=$(python -c "import secrets;print(secrets.token_urlsafe(48))")

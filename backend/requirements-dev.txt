@@ -1,0 +1,5 @@
+# Test-only deps for the backend suite (not needed by the app runtime).
+# The suite mocks the vision model, so torch / torchxrayvision are NOT required
+# to run it, and nothing here touches the network.
+pytest
+httpx

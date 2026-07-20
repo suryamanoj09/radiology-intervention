@@ -1,0 +1,27 @@
+# Node
+**/node_modules
+frontend/dist
+
+# Python bytecode / envs
+**/__pycache__
+**/*.pyc
+.venv
+**/.venv
+
+# Runtime storage (regenerated inside the container; never ship)
+backend/storage/*
+
+# Datasets + validation artifacts (large / license-restricted)
+validation/data
+datasets
+
+# Local env / secrets
+**/.env
+kaggle.json
+
+# VCS / editor / tooling
+.git
+.gitignore
+.claude
+*.md
+!README.md

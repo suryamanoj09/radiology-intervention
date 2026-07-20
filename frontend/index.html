@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RadAssist — AI Radiology Assistant</title>
+    <!-- Flash-free theme: stamp data-theme from the stored choice BEFORE the CSS
+         paints, so a manual Light/Dark differing from the system default never
+         flashes the wrong background. Render-blocking on purpose (must run before
+         first paint); the module bundle's initTheme() only re-syncs. Keep the
+         storage key in sync with ThemeToggle.jsx (radassist_theme). -->
+    <script>
+      (function () {
+        try {
+          var m = localStorage.getItem('radassist_theme');
+          if (m === 'light' || m === 'dark') document.documentElement.dataset.theme = m;
+        } catch (e) { /* system default */ }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+# =============================================================================
+# OPTIONAL heavy seam — anatomy segmentation overlay (TotalSegmentator/SynthSeg).
+# =============================================================================
+# These packages are NOT in requirements.txt and are installed ONLY on a
+# segment-enabled deploy (SEGMENT_MODEL=totalseg). The classical ship-now baseline
+# (SEGMENT_MODEL=classical — deterministic HU-threshold CT / intensity-cluster MR)
+# needs NONE of them: it runs on numpy + scipy + scikit-image, which are already
+# present. The provider self-gates to classical-only when these imports are absent
+# (like localizer.available()), so the app boots and serves fine without this file.
+#
+# Install (segment-enabled deploy only), AFTER the CPU-only torch wheels that the
+# Dockerfile installs from the PyTorch CPU index:
+#     pip install -r requirements-segment.txt
+#
+# LICENSE FAIL-CLOSED — READ BEFORE BUMPING ANY PIN:
+# A weight/task runs ONLY if it is commercial_ok AND anatomy_only (config.py
+# MODEL_REGISTRY + assert_task_allowed). TotalSegmentator downloads per-subtask
+# weights at first run, and each subtask carries its OWN license. On ANY version
+# bump you MUST re-verify every per-subtask weight LICENSE and reconcile
+# MODEL_REGISTRY / TOTALSEG_TASK_WHITELIST — a newly-added or relicensed subtask
+# is BLOCKED by default (fail-closed) until it is audited back in. Snapshot: 2026-07.
+# -----------------------------------------------------------------------------
+
+totalsegmentator==2.4.0   # anatomy-only organ/tissue segmentation; per-subtask weights re-license-checked on every bump
+nnunetv2==2.5.1           # inference backbone TotalSegmentator runs on (pulled transitively; pinned here for a reproducible, auditable build)
+nibabel==5.3.2            # NIfTI I/O for the DICOM->volume->mask round-trip (Apache/MIT-family)
+SimpleITK==2.4.1          # resampling / spacing-correct geometry for volume prep (Apache-2.0)
