@@ -12,12 +12,11 @@ primary_region = "sin"             # Singapore, Singapore
 [http_service]
   internal_port = 7860
   force_https = true
-  # Scale to zero when idle so a light demo costs ~nothing. First hit after idle
-  # cold-starts in a few seconds (the model weights are baked into the image, so
-  # nothing downloads). Set min_machines_running = 1 to avoid cold starts.
+  # Keep the ML service ready so users do not see a 503 during a cold start.
+  # This keeps one machine billed while idle; set to 0 only for temporary demos.
   auto_stop_machines = "stop"
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
 
 [[http_service.checks]]
   grace_period = "60s"
