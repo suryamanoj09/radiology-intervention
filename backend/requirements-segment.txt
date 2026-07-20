@@ -21,7 +21,7 @@
 # is BLOCKED by default (fail-closed) until it is audited back in. Snapshot: 2026-07.
 # -----------------------------------------------------------------------------
 
-totalsegmentator==2.4.0   # anatomy-only organ/tissue segmentation; per-subtask weights re-license-checked on every bump
-nnunetv2==2.5.1           # inference backbone TotalSegmentator runs on (pulled transitively; pinned here for a reproducible, auditable build)
-nibabel==5.3.2            # NIfTI I/O for the DICOM->volume->mask round-trip (Apache/MIT-family)
-SimpleITK==2.4.1          # resampling / spacing-correct geometry for volume prep (Apache-2.0)
+totalsegmentator==2.15.0   # anatomy-only organ/tissue segmentation; per-subtask weights re-license-checked on every bump
+nnunetv2==2.8.1           # inference backbone TotalSegmentator runs on (pulled transitively; pinned here for a reproducible, auditable build)
+nibabel==5.4.2            # NIfTI I/O for the DICOM->volume->mask round-trip (Apache/MIT-family)
+SimpleITK==2.5.5          # resampling / spacing-correct geometry for volume prep (Apache-2.0)
