@@ -127,12 +127,12 @@ clinician decides.
 
 ## Quick start
 
-**Prereqs:** Python 3.11+ and Node 18+.
+**Prereqs:** Python 3.11 (matches Docker/CI) and Node 18+.
 
 ```powershell
 # 1) Backend (first run downloads pretrained weights, ~30 MB)
 cd backend
-python -m venv .venv
+py -3.11 -m venv .venv
 .\.venv\Scripts\pip install -r requirements.txt
 .\.venv\Scripts\python -m uvicorn app.main:app --port 8000
 

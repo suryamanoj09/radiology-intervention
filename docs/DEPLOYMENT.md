@@ -75,7 +75,7 @@ The repo already includes a ready `fly.toml` (rename `app`, pick a region).
 fly auth login
 # from the repo root (fly.toml is here; it builds the Dockerfile):
 fly launch --no-deploy        # accept the existing fly.toml; choose a unique app name + region
-fly deploy                    # first build ~10-15 min (torch + baking weights)
+fly deploy --ha=false --deploy-retries=5  # temporary single-machine demo; retries transient deploy failures
 # optional, so logins survive a restart:
 fly secrets set SESSION_SECRET=$(python -c "import secrets;print(secrets.token_urlsafe(48))")
 ```

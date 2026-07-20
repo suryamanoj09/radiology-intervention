@@ -6,7 +6,7 @@ uvicorn[standard]==0.51.0
 python-multipart==0.0.32
 pydicom==3.0.2
 pillow==12.3.0
-numpy==2.4.6
+numpy==1.26.4
 pandas==3.0.3
 scikit-image==0.26.0
 # scipy: transitively present via scikit-image, but pinned explicitly because the
@@ -21,7 +21,8 @@ scipy==1.17.1
 #   pip install torch==2.2.2 torchvision==0.17.2 --index-url https://download.pytorch.org/whl/cpu
 torchxrayvision==1.5.2
 grad-cam==1.5.5
-opencv-python-headless==5.0.0.93
+opencv-python==4.11.0.86
+opencv-python-headless==4.11.0.86
 google-generativeai==0.8.6
 groq==1.5.0
 python-dotenv==1.2.2

@@ -57,7 +57,7 @@ USER user
 #    does zero downloading on first request. Runs as `user` so the download
 #    lands in the user-owned HOME cache that is committed into the image.
 #    If the ensemble later adds more weight sets, add one bake line per set.
-RUN python -c "import torchxrayvision as xrv; xrv.models.DenseNet(weights='densenet121-res224-all'); print('weights baked')"
+RUN python -c "import cv2; import numpy as np; import torch; import torchxrayvision as xrv; torch.from_numpy(np.zeros((1,), dtype=np.float32)); xrv.models.DenseNet(weights='densenet121-res224-all'); print('runtime dependencies and weights baked')"
 
 # 5) Built SPA from stage 1 -> ./frontend_dist. main.py mounts this at '/' as
 #    the LAST route (config.BASE_DIR/frontend_dist == /home/user/app/frontend_dist).
