@@ -1,7 +1,7 @@
 # Pinned for reproducible, auditable builds. Pillow/pydicom/opencv parse
 # untrusted uploaded bytes, so an unpinned build could silently pull a
 # vulnerable release — run `pip-audit` on this file in CI and bump deliberately.
-fastapi==0.139.0
+fastapi==0.139.2
 uvicorn[standard]==0.51.0
 python-multipart==0.0.32
 pydicom==3.0.2
