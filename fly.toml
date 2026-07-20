@@ -4,7 +4,7 @@
 # Tear down when finished:  fly apps destroy <app>   (then remove the Cloudflare DNS record).
 
 app = "radassist-demo-suryamanoj09" # unique Fly app name (this becomes <app>.fly.dev)
-primary_region = "bom"             # Mumbai, India
+primary_region = "sin"             # Singapore, Singapore
 
 [build]
   dockerfile = "Dockerfile"
