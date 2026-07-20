@@ -3,8 +3,8 @@
 # Rename `app`, pick a region near you, then: fly launch --no-deploy  (or fly deploy).
 # Tear down when finished:  fly apps destroy <app>   (then remove the Cloudflare DNS record).
 
-app = "radassist-demo"          # <-- change to a unique name (this becomes <app>.fly.dev)
-primary_region = "iad"          # <-- pick the closest: iad(US-E) lax(US-W) lhr(London) fra(Frankfurt) sin(Singapore) etc.
+app = "radassist-demo-suryamanoj09" # unique Fly app name (this becomes <app>.fly.dev)
+primary_region = "bom"             # Mumbai, India
 
 [build]
   dockerfile = "Dockerfile"
