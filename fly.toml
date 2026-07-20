@@ -20,7 +20,7 @@ primary_region = "sin"             # Singapore, Singapore
   min_machines_running = 0
 
 [[http_service.checks]]
-  grace_period = "30s"
+  grace_period = "60s"
   interval = "15s"
   method = "GET"
   timeout = "5s"

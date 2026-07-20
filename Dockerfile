@@ -53,11 +53,10 @@ RUN mkdir -p /home/user/.cache /home/user/app/storage \
 
 USER user
 
-# 4) BAKE the pretrained weights into the image at build time so a cold Space
-#    does zero downloading on first request. Runs as `user` so the download
-#    lands in the user-owned HOME cache that is committed into the image.
-#    If the ensemble later adds more weight sets, add one bake line per set.
-RUN python -c "import cv2; import numpy as np; import torch; import torchxrayvision as xrv; torch.from_numpy(np.zeros((1,), dtype=np.float32)); xrv.models.DenseNet(weights='densenet121-res224-all'); print('runtime dependencies and weights baked')"
+# 4) Bake every model loaded by the FastAPI lifespan hook. This prevents first
+#    boot from downloading weights and timing out Fly's health checks. Runs as
+#    `user` so the model cache is committed into the image with the right owner.
+RUN python -c "import cv2; import numpy as np; import torch; import torchxrayvision as xrv; torch.from_numpy(np.zeros((1,), dtype=np.float32)); xrv.models.DenseNet(weights='densenet121-res224-all'); xrv.autoencoders.ResNetAE(weights='101-elastic'); xrv.baseline_models.chestx_det.PSPNet(); print('runtime dependencies and startup weights baked')"
 
 # 5) Built SPA from stage 1 -> ./frontend_dist. main.py mounts this at '/' as
 #    the LAST route (config.BASE_DIR/frontend_dist == /home/user/app/frontend_dist).
