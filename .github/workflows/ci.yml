@@ -204,3 +204,25 @@ jobs:
         run: flyctl deploy --remote-only --ha=false --deploy-retries=5
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Start stopped Fly machines
+        run: |
+          flyctl machines list --json \
+            | jq -r '.[] | select(.state != "started") | .id' \
+            | while read -r machine_id; do
+                [ -z "$machine_id" ] || flyctl machine start "$machine_id"
+              done
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Verify public health
+        run: |
+          app_name=$(awk -F'"' '/^app =/{print $2; exit}' fly.toml)
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error --max-time 10 \
+              "https://${app_name}.fly.dev/api/health"; then
+              exit 0
+            fi
+            sleep 10
+          done
+          exit 1
