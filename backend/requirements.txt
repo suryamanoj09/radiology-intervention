@@ -13,7 +13,7 @@ scikit-image==0.26.0
 # classical anatomy-segmentation baseline (services/tissue_seg.py) imports
 # scipy.ndimage directly. NOTE: the heavy segmentation seam (TotalSegmentator/
 # SynthSeg) is NOT here — it lives in the optional requirements-segment.txt.
-scipy==1.18.0
+scipy==1.17.1
 # torch and torchvision are installed as CPU-only wheels in the Dockerfile
 # (from the PyTorch CPU index, BEFORE this file) so the multi-GB CUDA wheels are
 # never pulled. Do NOT re-add bare torch/torchvision lines here.
